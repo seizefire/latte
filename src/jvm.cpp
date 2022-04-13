@@ -28,6 +28,7 @@ void base_help_message() {
 
 int main(int argc, char** argv){
 	is_tty = _isatty(fileno(stdout)) > 0 && !std::getenv("NO_COLOR");
+	logger::init();
 	char buffer[MAX_PATH];
 	if(GetModuleFileNameA(NULL, buffer, MAX_PATH) == 0){
 		logger::error("Failed to retrieve assembly directory!");
