@@ -1,6 +1,6 @@
 #include <filesystem>
 
-#include "jre.h"
+#include "jre.hpp"
 
 const char sep = std::filesystem::path::preferred_separator;
 

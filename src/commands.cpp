@@ -1,6 +1,7 @@
-#include "config.h"
-#include "logger.h"
-#include "commands.h"
+#include "jre.hpp"
+#include "config.hpp"
+#include "logger.hpp"
+#include "commands.hpp"
 
 #include <cstring>
 

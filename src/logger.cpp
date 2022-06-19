@@ -2,8 +2,8 @@
 #include <cstring>
 #include <iostream>
 
-#include "jvm.h"
-#include "logger.h"
+#include "jvm.hpp"
+#include "logger.hpp"
 
 std::string prefix = "jvm ";
 std::string beginTimestamp = "[";

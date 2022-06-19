@@ -1,10 +1,11 @@
+#include <io.h>
 #include <direct.h>
 #include <windows.h>
 #include <filesystem>
 
-#include "jvm.h"
-#include "logger.h"
-#include "commands.h"
+#include "jvm.hpp"
+#include "logger.hpp"
+#include "commands.hpp"
 
 bool is_tty = false;
 std::string assembly_directory = "";
@@ -27,7 +28,7 @@ void base_help_message() {
 }
 
 int main(int argc, char** argv){
-	is_tty = _isatty(fileno(stdout)) > 0 && !std::getenv("NO_COLOR");
+	is_tty = isatty(fileno(stdout)) > 0 && !std::getenv("NO_COLOR");
 	logger::init();
 	char buffer[MAX_PATH];
 	if(GetModuleFileNameA(NULL, buffer, MAX_PATH) == 0){

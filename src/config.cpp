@@ -1,9 +1,9 @@
 #include <filesystem>
 
-#include "jvm.h"
-#include "config.h"
-#include "logger.h"
-#include "filesystem.h"
+#include "jvm.hpp"
+#include "config.hpp"
+#include "logger.hpp"
+#include "filesystem.hpp"
 
 const char sep = std::filesystem::path::preferred_separator;
 
