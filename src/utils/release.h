@@ -1,0 +1,1 @@
+char* find_property_value(char* buffer, char* key);

@@ -25,3 +25,5 @@ extern std::map<uint16_t, uint32_t> jre_defaults;
 
 bool load_config();
 bool save_config();
+
+uint32_t get_id_from_name(std::string name);

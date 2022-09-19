@@ -1,12 +1,44 @@
-#include "jre.hpp"
+extern "C" {
+	#include "utils/filesystem.h"
+	#include "utils/release.h"
+}
+
 #include "config.hpp"
 #include "logger.hpp"
 #include "commands.hpp"
 
+#include <regex>
+#include <fstream>
+#include <sstream>
 #include <cstring>
+#include <filesystem>
+
+const char sep = std::filesystem::path::preferred_separator;
+
+void scan_release_file(jvm &vm, std::string path){
+	std::string release_path = path + sep + "release";
+	if(std::filesystem::exists(release_path)){
+		char* buffer = read_entire_file(release_path.c_str());
+		char* value = find_property_value(buffer, "JAVA_VERSION");
+		logger::log(value);
+	}else{
+		logger::warn("JVM does not contain a \"releases\" file. Advanced information will not be available");
+	}
+}
 
 void commands::add(char* name, char* path){
-	
+	if(!is_valid_jre(path)){
+		logger::error("Path does not point to a valid JRE/JDK");
+		return;
+	}
+	if(get_id_from_name(name) != UINT32_MAX){
+		logger::error("Name is already taken");
+		return;
+	}
+	jvm vm = jvm();
+	vm.name = std::string(name);
+	vm.path = std::string(path);
+	scan_release_file(vm, path);
 }
 void commands::clean(){
 	
