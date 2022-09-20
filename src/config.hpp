@@ -10,6 +10,7 @@ class jvm {
 		uint16_t minor_version;
 		uint16_t patch_version;
 		uint16_t build_number;
+		std::string version;
 		uint8_t vendor;
 		uint8_t implementation;
 		uint8_t architecture;

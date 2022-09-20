@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdbool.h>
 #include <sys/stat.h>
 
@@ -12,19 +13,25 @@
 bool file_exists(const char* path){
 	struct stat st;
 	if(stat(path, &st)){
-
+		return true;
 	}
+	return false;
 }
 char* read_entire_file(const char* path){
-	struct stat st;
+	struct stat st = {0};
 	if(stat(path, &st) == 0){
-		if(st.st_mode & S_IFREG > 0){
-			FILE* file = fopen(path, "r+");
+		if((st.st_mode & S_IFREG) > 0){
+			FILE* file = fopen(path, "rb");
 			long size = st.st_size;
 			char* buffer = malloc(size + 1);
 			buffer[size] = 0;
-			fread(buffer, sizeof(char), size, file);
+			fseek(file, 0L, SEEK_SET);
+			int bytesRead = fread(buffer, sizeof(char), size, file);
 			fclose(file);
+			if(bytesRead < size){
+				free(buffer);
+				return NULL;
+			}
 			return buffer;
 		}
 	}
@@ -50,12 +57,18 @@ bool is_directory(const char* path){
 }
 bool is_valid_jre(const char* path){
 	int len = strlen(path);
-	char* java_path = malloc(len + 10);
-	char* javaw_path = malloc(len + 11);
-	java_path[len + 9] = 0;
-	javaw_path[len + 10] = 0;
+	char* java_path = malloc(len + 14);
+	char* javaw_path = malloc(len + 15);
+	java_path[len + 13] = 0;
+	javaw_path[len + 14] = 0;
+	memset(java_path, 0, len + 14);
+	memset(javaw_path, 0, len + 15);
 	memcpy(java_path, path, len);
 	memcpy(javaw_path, path, len);
+	strcat(java_path, sep);
+	strcat(javaw_path, sep);
+	strcat(java_path, "bin");
+	strcat(javaw_path, "bin");
 	strcat(java_path, sep);
 	strcat(javaw_path, sep);
 	strcat(java_path, "java.exe");

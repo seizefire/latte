@@ -42,19 +42,19 @@ std::string logger::dye(std::string text, int r, int g, int b){
 	return text;
 }
 void logger::fatal(std::string text){
-	std::cout << std::endl << prefix + timestamp() + fatalPrefix + text;
+	std::cout << std::endl << prefix + timestamp() + fatalPrefix + text + (is_tty ? "\x1b[0m" : "");
 }
 void logger::info(std::string text){
-	std::cout << std::endl << prefix + timestamp() + infoPrefix + text;
+	std::cout << std::endl << prefix + timestamp() + infoPrefix + text + (is_tty ? "\x1b[0m" : "");
 }
 void logger::log(std::string text){
 	std::cout << std::endl << text + (is_tty ? "\x1b[0m" : "");
 }
 void logger::warn(std::string text){
-	std::cout << std::endl << prefix + timestamp() + warnPrefix + text;
+	std::cout << std::endl << prefix + timestamp() + warnPrefix + text + (is_tty ? "\x1b[0m" : "");
 }
 void logger::error(std::string text){
-	std::cout << std::endl << prefix + timestamp() + errorPrefix + text;
+	std::cout << std::endl << prefix + timestamp() + errorPrefix + text + (is_tty ? "\x1b[0m" : "");
 }
 bool logger::start_progress(std::string task, std::string name, std::string initialStatus){
 	if(progress_started){

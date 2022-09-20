@@ -17,12 +17,16 @@ const char sep = std::filesystem::path::preferred_separator;
 
 void scan_release_file(jvm &vm, std::string path){
 	std::string release_path = path + sep + "release";
-	if(std::filesystem::exists(release_path)){
-		char* buffer = read_entire_file(release_path.c_str());
-		char* value = find_property_value(buffer, "JAVA_VERSION");
-		logger::log(value);
-	}else{
+	if(!std::filesystem::exists(release_path)){
 		logger::warn("JVM does not contain a \"releases\" file. Advanced information will not be available");
+		return;
+	}
+	char* buffer = read_entire_file(release_path.c_str());
+	char* value = find_property_value(buffer, "JAVA_VERSION");
+	logger::info("Found JVM version: " + std::string(value));
+	int* numbers = scan_version_string(value);
+	for(int index = 0; index < 4; index++){
+		logger::info(std::to_string(numbers[index]));
 	}
 }
 
