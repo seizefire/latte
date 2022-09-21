@@ -1,6 +1,6 @@
-default: jvm.exe
+default: latte.exe
 
-jvm.exe:
+latte.exe:
 	mkdir -p build
 	mkdir -p build/utils
 	gcc -c -std=c99 src/utils/filestreams.c -o build/utils/filestreams.o
@@ -8,10 +8,10 @@ jvm.exe:
 	gcc -c -std=c99 src/utils/release.c -o build/utils/release.o
 	g++ -c src/commands.cpp -o build/commands.o
 	g++ -c src/config.cpp -o build/config.o
-	g++ -c src/jvm.cpp -o build/jvm.o
+	g++ -c src/latte.cpp -o build/latte.o
 	g++ -c src/logger.cpp -o build/logger.o
-	g++ build/utils/*.o build/*.o -o jvm.exe
+	g++ build/utils/*.o build/*.o -o latte.exe
 
 clean:
-	rm jvm.exe
+	rm latte.exe
 	rm -rf build

@@ -3,7 +3,7 @@
 #include <windows.h>
 #include <filesystem>
 
-#include "jvm.hpp"
+#include "latte.hpp"
 #include "logger.hpp"
 #include "commands.hpp"
 
@@ -12,7 +12,7 @@ std::string assembly_directory = "";
 std::string working_directory = "";
 
 void base_help_message() {
-	logger::log(logger::dye("jvm", 0, 255, 255) + logger::dye(" [arguments]", 155, 155, 155));
+	logger::log(logger::dye("latte", 150, 75, 0) + logger::dye(" [arguments]", 255, 255, 255));
 	logger::log(logger::dye("\nCommands:", 155, 155, 155));
 	logger::help("[a]dd", "<name> <path>        ", "Adds an already-installed JVM");
 	logger::help("[c]lean", "                   ", "Removes any inaccessible JVMs");
@@ -25,6 +25,7 @@ void base_help_message() {
 	logger::help("[r]e[m]ove", "[--keep] <name> ", "Removes a JVM (use --keep to remove the JVM without deleting it)");
 	logger::help("[ren]ame", "<old> <new>       ", "Renames a JVM");
 	logger::help("[u]se", "<name>               ", "Uses the given Java installation in PATH");
+	logger::log("");
 }
 
 int main(int argc, char** argv){

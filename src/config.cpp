@@ -5,7 +5,7 @@ extern "C" {
 	#include "utils/filesystem.h"
 }
 
-#include "jvm.hpp"
+#include "latte.hpp"
 #include "config.hpp"
 #include "logger.hpp"
 
@@ -19,7 +19,7 @@ std::map<uint16_t, uint32_t> jdk_defaults = std::map<uint16_t, uint32_t>();
 std::map<uint16_t, uint32_t> jre_defaults = std::map<uint16_t, uint32_t>();
 
 bool load_config(){
-	std::string path = assembly_directory + sep + "jvm_v1.cfg";
+	std::string path = assembly_directory + sep + "lattev1.dat";
 	jvms.clear();
 	jdk_defaults.clear();
 	jre_defaults.clear();
@@ -34,7 +34,7 @@ bool load_config(){
 		logger::error("Unable to read config");
 		return false;
 	}
-	if(read_string(stream, 4) != "JVM#"){
+	if(read_string(stream, 8) != "LATTEV1#"){
 		logger::error("Corrupted config");
 		return false;
 	}
@@ -79,13 +79,13 @@ bool load_config(){
 	return true;
 }
 bool save_config(){
-	std::string path = assembly_directory + sep + "jvm_v1.cfg";
+	std::string path = assembly_directory + sep + "lattev1.dat";
 	FILE* stream = fopen(path.c_str(), "w");
 	if(stream == NULL){
 		logger::error("Unable to write config");
 		return false;
 	}
-	write_string(stream, "JVM#");
+	write_string(stream, "LATTEV1#");
 	write_uint32_le(stream, 0xa70269f0u);
 	write_uint32_le(stream, current_id);
 	write_uint32_le(stream, next_id);

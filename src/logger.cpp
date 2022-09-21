@@ -2,10 +2,10 @@
 #include <cstring>
 #include <iostream>
 
-#include "jvm.hpp"
+#include "latte.hpp"
 #include "logger.hpp"
 
-std::string prefix = "jvm ";
+std::string prefix = "latte ";
 std::string beginTimestamp = "[";
 std::string endTimestamp = "] ";
 std::string fatalPrefix = "fatal ";
@@ -26,8 +26,8 @@ std::string timestamp(){
 }
 void logger::init(){
 	if(is_tty){
-		prefix = "\x1b[38;2;0;255;255mjvm\x1b[0m ";
-		beginTimestamp = "\x1b[38;2;155;125;255m[";
+		prefix = "\x1b[38;2;150;75;0mlatte\x1b[0m ";
+		beginTimestamp = "\x1b[38;2;0;255;255m[";
 		endTimestamp = "]\x1b[0m ";
 		fatalPrefix = "\x1b[38;2;255;85;0mfatal\x1b[0m \x1b[38;2;255;155;70m";
 		infoPrefix = "\x1b[38;2;0;135;255minfo\x1b[0m \x1b[38;2;255;255;255m";
@@ -92,8 +92,8 @@ void logger::close_progress(std::string end_status){
 }
 void logger::help(std::string command, std::string arguments, std::string purpose){
 	if(is_tty){
-		logger::log("  \x1b[38;2;0;255;255mjvm \x1b[38;2;0;195;145m" + command + " \x1b[38;2;255;255;0m" + arguments + "\x1b[0m - " + purpose);
+		logger::log("  \x1b[38;2;150;75;0mlatte \x1b[38;2;255;215;145m" + command + " \x1b[38;2;255;255;255m" + arguments + "\x1b[0m - " + purpose);
 	}else{
-		logger::log("  jvm " + command + " " + arguments + " - " + purpose);
+		logger::log("  latte " + command + " " + arguments + " - " + purpose);
 	}
 }
