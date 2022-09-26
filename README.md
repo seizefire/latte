@@ -8,11 +8,11 @@ This is an in-development program for Windows. This will be an all-in-one utilit
 - [x] Establish configuration layout
 - [x] Implement config load and save
 - [x] Create logger
-- [ ] Implement JVM analyzing (finding version, implementation, etc.)
+- [x] Implement JVM analyzing (finding version, implementation, etc.)
+- [ ] Create config V2 (more JVM info, release date, ...)
 - [ ] Set up environment variable and registry editing
 - [ ] Implement add/current/list/remove/use
 - [ ] Implement clean/move/register/rename
-- [ ] Create config V2 (more JVM info, release date, ...)
 - [ ] Implement print
 - [ ] Implement basic HTTP requests and JSON handling
 - [ ] Create Oracle website scraper
