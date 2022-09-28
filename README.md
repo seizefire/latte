@@ -3,6 +3,8 @@
 
 This is an in-development program for Windows. This will be an all-in-one utility for managing and installing Java JDKs and JREs in any version. The end goal is to allow the user to build JDKs from source (that's far in the future).
 
+Currently, building this project will not work.
+
 ## Progress
 - [x] Create general command handling
 - [x] Establish configuration layout
