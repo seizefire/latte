@@ -63,8 +63,10 @@ bool scan_for_implementation(struct jvm* entry, char* buffer){
 		return true;
 	}else if(strcmp(implementor, "BellSoft") == 0){
 		entry->vendor = 3;
+		return true;
 	}else if(strcmp(implementor, "Azul Systems, Inc.") == 0){
 		entry->vendor = 4;
+		return true;
 	}
 	return false;
 }
@@ -111,7 +113,7 @@ bool scan_for_version(struct jvm* entry, char* version){
 	entry->minor_version = UINT16_MAX;
 	entry->patch_version = UINT16_MAX;
 	entry->build_number = UINT16_MAX;
-	return true;
+	return false;
 }
 bool scan_for_alternate_version(struct jvm* entry, char* buffer){
 	memset(entry->alt_version, 0, 32);
