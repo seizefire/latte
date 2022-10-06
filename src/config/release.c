@@ -42,7 +42,7 @@ char* find_property_value(char* buffer, char* key){
 // Oracle Corporation, ????, Eclipse Adoptium, BellSoft, Azul Systems, Inc.
 // HotSpot, OpenJ9
 
-bool scan_for_implementation(struct jvm* entry, char* buffer){
+bool scan_for_implementation(jvm* entry, char* buffer){
 	char* implementor = find_property_value(buffer, "IMPLEMENTOR");
 	entry->implementation = 0;
 	if(implementor == NULL){
@@ -70,7 +70,7 @@ bool scan_for_implementation(struct jvm* entry, char* buffer){
 	}
 	return false;
 }
-bool scan_for_build_date(struct jvm* entry, char* buffer){
+bool scan_for_build_date(jvm* entry, char* buffer){
 	char* build_date = find_property_value(buffer, "JAVA_VERSION_DATE");
 	if(build_date == NULL){
 		entry->build_date = 255;
@@ -86,7 +86,7 @@ bool scan_for_build_date(struct jvm* entry, char* buffer){
 		return true;
 	}
 }
-bool scan_for_version(struct jvm* entry, char* version){
+bool scan_for_version(jvm* entry, char* version){
 	int length = strlen(version);
 	// X.X.X.X
 	sscanf(version, "%hu.%hu.%hu.%hu", &entry->major_version, &entry->minor_version, &entry->patch_version, &entry->build_number);
@@ -115,7 +115,7 @@ bool scan_for_version(struct jvm* entry, char* version){
 	entry->build_number = UINT16_MAX;
 	return false;
 }
-bool scan_for_alternate_version(struct jvm* entry, char* buffer){
+bool scan_for_alternate_version(jvm* entry, char* buffer){
 	memset(entry->alt_version, 0, 32);
 	if(entry->implementation > 0){
 		char* jvm_version = find_property_value(buffer, "JVM_VERSION");
