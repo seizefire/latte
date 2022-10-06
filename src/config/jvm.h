@@ -1,5 +1,5 @@
 #pragma once
-#include <cstdint>
+#include <stdint.h>
 
 typedef struct jvm_ {
 	uint32_t id;

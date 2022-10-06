@@ -55,18 +55,24 @@ uint32_t read_uint32_le(FILE* file, uint32_t* number){
 char* read_string(FILE* file, size_t length){
 	char* buf = malloc(length + 1);
 	buf[length] = 0;
-	if(fread(buf, sizeof(char), length, file) < length){
+	read_to_buffer(file, buf, length);
+	if(FILESTREAM_ERROR > 0){
 		free(buf);
+		return NULL;
+	}
+	return buf;
+}
+void read_to_buffer(FILE* file, char* buffer, size_t length){
+	if(fread(buffer, sizeof(char), length, file) < length){
 		if(feof(file)){
 			FILESTREAM_ERROR = 1;
-			return NULL;
+			return;
 		}
 		clearerr(file);
 		FILESTREAM_ERROR = 255;
-		return NULL;
+		return;
 	}
 	FILESTREAM_ERROR = 0;
-	return buf;
 }
 void write_uint8(FILE* file, uint8_t number){
 	char buf[1] = {(char) number};
