@@ -3,6 +3,7 @@
 #include "../utils/filestreams.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 jvm* jvms = NULL;
 uint32_t jvm_count = 0;
@@ -52,7 +53,9 @@ void load_latte_config(char* path){
 	jre_default_count = read_uint16_le(stream);
 	jvms = malloc(sizeof(jvm) * (jvm_count + 1));
 	jdk_defaults = malloc(sizeof(jvm) * (jdk_default_count + 1));
+	jdk_defaults[jdk_default_count] = NULL;
 	jre_defaults = malloc(sizeof(jvm) * (jre_default_count + 1));
+	jre_defaults[jre_default_count] = NULL;
 	normal_jvms = malloc(sizeof(jvm) * (jvm_count - jdk_default_count - jre_default_count + 1));
 	uint32_t jdkdi = 0, jredi = 0, nordi = 0;
 	for(uint32_t i = 0; i < jvm_count; ++i){
@@ -90,5 +93,33 @@ void load_latte_config(char* path){
 	}
 }
 void save_latte_config(char* path){
-
+	FILE* stream = fopen(path, "w");
+	write_uint32_le(stream, jvm_count);
+	write_uint32_le(stream, next_jvm_id);
+	write_uint32_le(stream, current_jvm == NULL ? UINT32_MAX : current_jvm->id);
+	write_uint16_le(stream, jdk_default_count);
+	write_uint16_le(stream, jre_default_count);
+	for(uint32_t i = 0; i < jvm_count; ++i){
+		if(jvms[i].flags & 1 == 1){
+			continue;
+		}
+		write_uint32_le(stream, jvms[i].id);
+		write_uint8(stream, strlen(jvms[i].name));
+		write_uint8(stream, strlen(jvms[i].version));
+		write_uint8(stream, strlen(jvms[i].alt_version));
+		write_string(stream, jvms[i].name);
+		write_string(stream, jvms[i].version);
+		write_string(stream, jvms[i].alt_version);
+		write_uint16_le(stream, jvms[i].major_version);
+		write_uint16_le(stream, jvms[i].minor_version);
+		write_uint16_le(stream, jvms[i].patch_version);
+		write_uint16_le(stream, jvms[i].build_number);
+		write_uint16_le(stream, jvms[i].build_year);
+		write_uint8(stream, jvms[i].build_month);
+		write_uint8(stream, jvms[i].build_date);
+		write_uint8(stream, jvms[i].vendor);
+		write_uint8(stream, jvms[i].implementation);
+		write_uint8(stream, jvms[i].architecture);
+		write_uint8(stream, jvms[i].flags);
+	}
 }

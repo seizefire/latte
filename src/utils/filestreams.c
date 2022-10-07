@@ -101,6 +101,9 @@ void write_uint32_le(FILE* file, uint32_t number){
 void write_string(FILE* file, char* string){
 	size_t length = strlen(string);
 	FILESTREAM_ERROR = 0;
+	if(length == 0){
+		return;
+	}
 	if(fwrite(string, sizeof(char), length, file) < length){
 		clearerr(file);
 		FILESTREAM_ERROR = 2;
@@ -109,6 +112,9 @@ void write_string(FILE* file, char* string){
 void write_string_const(FILE* file, const char* string){
 	size_t length = strlen(string);
 	FILESTREAM_ERROR = 0;
+	if(length == 0){
+		return;
+	}
 	if(fwrite(string, sizeof(char), length, file) < length){
 		clearerr(file);
 		FILESTREAM_ERROR = 2;
