@@ -11,7 +11,7 @@ Currently, building this project will not work.
 - [x] Implement config load and save
 - [x] Create logger
 - [x] Implement JVM analyzing (finding version, implementation, etc.)
-- [ ] Create config V2 (more JVM info, release date, ...)
+- [x] Create config V2 (more JVM info, release date, ...)
 - [ ] Set up environment variable and registry editing
 - [ ] Implement add/current/list/remove/use
 - [ ] Implement clean/move/register/rename

@@ -1,9 +1,9 @@
 extern "C" {
 	#include "utils/filesystem.h"
-	#include "utils/release.h"
+	#include "config/release.h"
+	#include "config/store.h"
 }
 
-#include "config.hpp"
 #include "logger.hpp"
 #include "commands.hpp"
 
@@ -22,12 +22,13 @@ void scan_release_file(jvm &vm, std::string path){
 		return;
 	}
 	char* buffer = read_entire_file(release_path.c_str());
-	char* value = find_property_value(buffer, "JAVA_VERSION");
-	logger::info("Found JVM version: " + std::string(value));
-	int* numbers = scan_version_string(value);
-	for(int index = 0; index < 4; index++){
-		logger::info(std::to_string(numbers[index]));
-	}
+	char* version = find_property_value(buffer, "JAVA_VERSION");
+	memcpy(vm.version, version, strlen(version));
+	logger::info("Found JVM version: " + std::string(vm.version));
+	scan_for_implementation(&vm, buffer);
+	scan_for_version(&vm);
+	scan_for_build_date(&vm, buffer);
+	scan_for_alternate_version(&vm, buffer);
 }
 
 void commands::add(char* name, char* path){
@@ -35,31 +36,22 @@ void commands::add(char* name, char* path){
 		logger::error("Path does not point to a valid JRE/JDK");
 		return;
 	}
-	if(get_id_from_name(name) != UINT32_MAX){
+	/*if(get_id_from_name(name) != UINT32_MAX){
 		logger::error("Name is already taken");
 		return;
-	}
+	}*/
 	jvm vm = jvm();
-	vm.name = std::string(name);
-	vm.path = std::string(path);
+	memcpy(vm.name, name, strlen(name));
 	scan_release_file(vm, path);
+	logger::info("Major Version: " + std::to_string(vm.major_version));
+	logger::info("Minor Version: " + std::to_string(vm.minor_version));
+	logger::info("Patch Version: " + std::to_string(vm.patch_version));
 }
 void commands::clean(){
 	
 }
 void commands::current(){
 	
-}
-void commands::debug(char* key){
-	logger::log("command: debug");
-	if(strcmp(key, "config") == 0){
-		load_config();
-		logger::log("JVMs: " + std::to_string(jvms.size()));
-		logger::log("JDK Count: " + std::to_string(jdk_defaults.size()));
-		logger::log("JRE Count: " + std::to_string(jre_defaults.size()));
-		logger::log("Current ID: " + std::to_string(current_id));
-		logger::log("Next ID: " + std::to_string(next_id));
-	}
 }
 void commands::install(char** argv, int argc){
 	

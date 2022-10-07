@@ -47,7 +47,7 @@ bool scan_for_implementation(jvm* entry, char* buffer){
 	entry->implementation = 0;
 	if(implementor == NULL){
 		char* build_type = find_property_value(buffer, "BUILD_TYPE");
-		if(strcmp(build_type, "commercial") == 0){
+		if(build_type == NULL || strcmp(build_type, "commercial") == 0){
 			entry->vendor = 0;
 			return true;
 		}
@@ -86,25 +86,25 @@ bool scan_for_build_date(jvm* entry, char* buffer){
 		return true;
 	}
 }
-bool scan_for_version(jvm* entry, char* version){
-	int length = strlen(version);
+bool scan_for_version(jvm* entry){
+	int length = strlen(entry->version);
 	// X.X.X.X
-	sscanf(version, "%hu.%hu.%hu.%hu", &entry->major_version, &entry->minor_version, &entry->patch_version, &entry->build_number);
+	sscanf(entry->version, "%hu.%hu.%hu.%hu", &entry->major_version, &entry->minor_version, &entry->patch_version, &entry->build_number);
 	if(entry->build_number != -1){
 		return true;
 	}
 	// X.X.X_X
-	sscanf(version, "%hu.%hu.%hu_%hu", &entry->major_version, &entry->minor_version, &entry->patch_version, &entry->build_number);
+	sscanf(entry->version, "%hu.%hu.%hu_%hu", &entry->major_version, &entry->minor_version, &entry->patch_version, &entry->build_number);
 	if(entry->build_number != -1){
 		return true;
 	}
 	// X.X.X+X
-	sscanf(version, "%hu.%hu.%hu+%hu", &entry->major_version, &entry->minor_version, &entry->patch_version, &entry->build_number);
+	sscanf(entry->version, "%hu.%hu.%hu+%hu", &entry->major_version, &entry->minor_version, &entry->patch_version, &entry->build_number);
 	if(entry->patch_version != -1){
 		return true;
 	}
 	// XuX-bX
-	sscanf(version, "%huu%hu-b%hu", &entry->major_version, &entry->patch_version, &entry->build_number);
+	sscanf(entry->version, "%huu%hu-b%hu", &entry->major_version, &entry->patch_version, &entry->build_number);
 	if(entry->build_number != -1){
 		entry->minor_version = 0;
 		return true;

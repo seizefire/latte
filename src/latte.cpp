@@ -62,11 +62,7 @@ int main(int argc, char** argv){
 				return 0;
 			}
 		case 3:
-			if(strcmp(argv[1], "debug") == 0){
-				commands::debug(argv[2]);
-				return 0;
-			}
-			else if(strcmp(argv[1], "print") == 0 || strcmp(argv[1], "p") == 0){
+			if(strcmp(argv[1], "print") == 0 || strcmp(argv[1], "p") == 0){
 				commands::print(argv[2]);
 				return 0;
 			}

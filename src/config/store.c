@@ -94,7 +94,13 @@ void load_latte_config(char* path){
 }
 void save_latte_config(char* path){
 	FILE* stream = fopen(path, "w");
-	write_uint32_le(stream, jvm_count);
+	uint32_t count = jvm_count;
+	for(uint32_t i = 0; i < jvm_count; ++i){
+		if(jvms[i].flags & 1 == 1){
+			--count;
+		}
+	}
+	write_uint32_le(stream, count);
 	write_uint32_le(stream, next_jvm_id);
 	write_uint32_le(stream, current_jvm == NULL ? UINT32_MAX : current_jvm->id);
 	write_uint16_le(stream, jdk_default_count);
