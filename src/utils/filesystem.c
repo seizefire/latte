@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <sys/stat.h>
 
+#include "winfileapi.h"
+
 #ifdef _WIN32
 	const char* sep = "\\";
 #else
@@ -81,4 +83,12 @@ bool is_valid_jre(const char* path){
 	free(java_path);
 	free(javaw_path);
 	return false;
+}
+bool compare_paths(const char* path1, const char* path2){
+	char* fpath1 = realpath(path1);
+	char* fpath2 = realpath(path2);
+	bool val = (strcmp(fpath1, fpath2) == 0);
+	free(fpath1);
+	free(fpath2);
+	return val;
 }
