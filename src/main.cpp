@@ -1,45 +1,30 @@
 #include <io.h>
+#include <string>
 #include <direct.h>
 #include <windows.h>
-#include <filesystem>
 
-#include "latte.hpp"
-#include "logger.hpp"
 #include "commands.hpp"
+
+extern "C" {
+	#include "logging/help.h"
+	#include "logging/logger.h"
+}
 
 bool is_tty = false;
 std::string assembly_directory = "";
 std::string working_directory = "";
 
-void base_help_message() {
-	logger::log(logger::dye("latte", 150, 75, 0) + logger::dye(" [arguments]", 255, 255, 255));
-	logger::log(logger::dye("\nCommands:", 155, 155, 155));
-	logger::help("[a]dd", "<name> <path>        ", "Adds an already-installed JVM");
-	logger::help("[c]lean", "                   ", "Removes any inaccessible JVMs");
-	logger::help("[cur]rent", "                 ", "Prints the JVM being used in PATH, along with the release version defaults");
-	logger::help("[i]nstall", "[arguments]      ", "Installs a new JVM");
-	logger::help("[l]ist", "                    ", "Lists the names of all available JVMs");
-	logger::help("[m]ove", "<name> <new_path>   ", "Moves the selected JVM to a different location");
-	logger::help("[p]rint", "<name>             ", "Prints information on a JVM");
-	logger::help("[reg]ister", "<name>          ", "Registers a JVM as its version default");
-	logger::help("[r]e[m]ove", "[--keep] <name> ", "Removes a JVM (use --keep to remove the JVM without deleting it)");
-	logger::help("[ren]ame", "<old> <new>       ", "Renames a JVM");
-	logger::help("[u]se", "<name>               ", "Uses the given Java installation in PATH");
-	logger::log("");
-}
-
 int main(int argc, char** argv){
 	is_tty = isatty(fileno(stdout)) > 0 && !std::getenv("NO_COLOR");
-	logger::init();
 	char buffer[MAX_PATH];
 	if(GetModuleFileNameA(NULL, buffer, MAX_PATH) == 0){
-		logger::error("Failed to retrieve assembly directory!");
+		logger_error("Failed to retrieve assembly directory!");
 		return 0;
 	}
 	assembly_directory = std::string(buffer);
 	assembly_directory = assembly_directory.substr(0, assembly_directory.find_last_of("/\\"));
 	if(GetCurrentDirectoryA(MAX_PATH, buffer) == 0){
-		logger::error("Failed to retrieve working directory!");
+		logger_error("Failed to retrieve working directory!");
 		return 0;
 	}
 	working_directory = std::string(buffer);
@@ -100,7 +85,7 @@ int main(int argc, char** argv){
 				return 0;
 			}
 		case 1:
-			base_help_message();
+			logger_display_main_help();
 			return 0;
 	}
 }

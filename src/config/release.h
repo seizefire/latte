@@ -2,10 +2,12 @@
 
 #include <stdbool.h>
 
-#include "jvm.h"
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 
-char* find_property_value(char* buffer, char* key);
-bool scan_for_implementation(jvm* entry, char* buffer);
-bool scan_for_build_date(jvm* entry, char* buffer);
-bool scan_for_version(jvm* entry);
-bool scan_for_alternate_version(jvm* entry, char* buffer);
+char* find_property_value(char* buffer, const char* key);
+bool scan_for_implementation(char* buffer, u8* vendor, u8* implementation);
+bool scan_for_build_date(char* buffer, u8* date, u8* month, u16* year);
+bool scan_for_version(const char* version, u16* major_version, u16* minor_version, u16* patch_version, u16* build_number, u64* build_identifier);

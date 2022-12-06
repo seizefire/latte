@@ -1,12 +1,11 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "jvm.h"
 #include "release.h"
+#include "../filesystem/fileapi.h"
 
-char* find_property_value(char* buffer, char* key){
+char* find_property_value(char* buffer, const char* key){
 	int keylen = strlen(key);
 	char* prefix = malloc(keylen + 3);
 	memset(prefix, 0, keylen + 3);
@@ -42,87 +41,84 @@ char* find_property_value(char* buffer, char* key){
 // Oracle Corporation, ????, Eclipse Adoptium, BellSoft, Azul Systems, Inc.
 // HotSpot, OpenJ9
 
-bool scan_for_implementation(jvm* entry, char* buffer){
+bool scan_for_implementation(char* buffer, u8* vendor, u8* implementation){
 	char* implementor = find_property_value(buffer, "IMPLEMENTOR");
-	entry->implementation = 0;
+	*implementation = 0;
 	if(implementor == NULL){
 		char* build_type = find_property_value(buffer, "BUILD_TYPE");
 		if(build_type == NULL || strcmp(build_type, "commercial") == 0){
-			entry->vendor = 0;
+			*vendor = 0;
 			return true;
 		}
 	}else if(strcmp(implementor, "Oracle Corporation") == 0){
-		entry->vendor = 0;
+		*vendor = 0;
 		return true;
 	}else if(strcmp(implementor, "Eclipse Adoptium") == 0){
-		entry->vendor = 2;
+		*vendor = 2;
 		char* variant = find_property_value(buffer, "JVM_VARIANT");
 		if(variant != NULL && strcmp(variant, "Openj9") == 0){
-			entry->implementation = 1;
+			*implementation = 1;
 		}
 		return true;
 	}else if(strcmp(implementor, "BellSoft") == 0){
-		entry->vendor = 3;
+		*vendor = 3;
 		return true;
 	}else if(strcmp(implementor, "Azul Systems, Inc.") == 0){
-		entry->vendor = 4;
+		*vendor = 4;
 		return true;
 	}
 	return false;
 }
-bool scan_for_build_date(jvm* entry, char* buffer){
+bool scan_for_build_date(char* buffer, u8* date, u8* month, u16* year){
 	char* build_date = find_property_value(buffer, "JAVA_VERSION_DATE");
 	if(build_date == NULL){
-		entry->build_date = 255;
-		entry->build_month = 255;
-		entry->build_year = UINT16_MAX;
+		*date = 255;
+		*month = 255;
+		*year = 65535;
 		return false;
 	}else{
 		int values[3] = {0, 0, 0};
 		sscanf(build_date, "%d-%d-%d", &values[0], &values[1], &values[2]);
-		entry->build_year = values[0];
-		entry->build_month = values[1];
-		entry->build_date = values[2];
+		*year = values[0];
+		*month = values[1];
+		*date = values[2];
 		return true;
 	}
 }
-bool scan_for_version(jvm* entry){
-	int length = strlen(entry->version);
+bool scan_for_version(const char* version, u16* major_version, u16* minor_version, u16* patch_version, u16* build_number, u64* build_identifier){
+	int length = strlen(version);
+	*major_version = 65535;
+	*minor_version = 65535;
+	*patch_version = 65535;
+	*build_number = 65535;
 	// X.X.X.X
-	sscanf(entry->version, "%hu.%hu.%hu.%hu", &entry->major_version, &entry->minor_version, &entry->patch_version, &entry->build_number);
-	if(entry->build_number != -1){
+	sscanf(version, "%hu.%hu.%hu.%hu", major_version, minor_version, patch_version, build_number);
+	if(*build_number != -1){
+		*build_identifier = (((u64) *major_version) << 48) | (((u64) *minor_version) << 32) | (((u64) *patch_version) << 16) | (u64) *build_number;
 		return true;
 	}
 	// X.X.X_X
-	sscanf(entry->version, "%hu.%hu.%hu_%hu", &entry->major_version, &entry->minor_version, &entry->patch_version, &entry->build_number);
-	if(entry->build_number != -1){
+	sscanf(version, "%hu.%hu.%hu_%hu", major_version, minor_version, patch_version, build_number);
+	if(*build_number != -1){
+		*build_identifier = (((u64) *major_version) << 48) | (((u64) *minor_version) << 32) | (((u64) *patch_version) << 16) | (u64) *build_number;
 		return true;
 	}
 	// X.X.X+X
-	sscanf(entry->version, "%hu.%hu.%hu+%hu", &entry->major_version, &entry->minor_version, &entry->patch_version, &entry->build_number);
-	if(entry->patch_version != -1){
+	sscanf(version, "%hu.%hu.%hu+%hu", major_version, minor_version, patch_version, build_number);
+	if(*patch_version != -1){
+		*build_identifier = (((u64) *major_version) << 48) | (((u64) *minor_version) << 32) | (((u64) *patch_version) << 16) | (u64) *build_number;
 		return true;
 	}
 	// XuX-bX
-	sscanf(entry->version, "%huu%hu-b%hu", &entry->major_version, &entry->patch_version, &entry->build_number);
-	if(entry->build_number != -1){
-		entry->minor_version = 0;
+	sscanf(version, "%huu%hu-b%hu", major_version, patch_version, build_number);
+	if(*build_number != -1){
+		*minor_version = 0;
+		*build_identifier = (((u64) *major_version) << 48) | (((u64) *minor_version) << 32) | (((u64) *patch_version) << 16) | (u64) *build_number;
 		return true;
 	}
-	entry->major_version = UINT16_MAX;
-	entry->minor_version = UINT16_MAX;
-	entry->patch_version = UINT16_MAX;
-	entry->build_number = UINT16_MAX;
-	return false;
-}
-bool scan_for_alternate_version(jvm* entry, char* buffer){
-	memset(entry->alt_version, 0, 32);
-	if(entry->implementation > 0){
-		char* jvm_version = find_property_value(buffer, "JVM_VERSION");
-		if(jvm_version != NULL){
-			strcpy(entry->alt_version, jvm_version);
-			return true;
-		}
-	}
+	*major_version = 65535;
+	*minor_version = 65535;
+	*patch_version = 65535;
+	*build_number = 65535;
 	return false;
 }

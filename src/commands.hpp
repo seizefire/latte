@@ -1,3 +1,5 @@
+#pragma once
+
 namespace commands {
 	void add(char* name, char* path);
 	void clean();
